@@ -3,7 +3,7 @@ var router = express.Router();
 
 const User = require("../models/users");
 const Kick = require("../models/kicks");
-const Trend = require("../models/trends")
+const Trend = require("../models/trends");
 const { checkBody } = require("../modules/checkBody");
 
 // GET /kicks/all --> retrieve all kicks
@@ -44,37 +44,35 @@ router.post("/new", (req, res) => {
         newKick = new Kick({
           author: data._id,
           message: req.body.message,
+          sentAtTimestamp: Math.floor(Date.now() / 1000),
         });
-
-
 
         newKick
           .save()
           .then((kick) => {
-
-        //Add trend if # in kick
-        const regex = /#[\wÀ-ÖØ-öø-ÿ]+/g
-        const tab = kick.message.match(regex)
-        //map of # in order to create or update numbers of ID
-        tab.map((hashtag) => {
-          Trend.findOne({name: hashtag}).then(
-            trend => {
-              if (trend) { // if trend exist > add one more kickID to trend
-                Trend.updateOne(
-                  { name: hashtag },
-                  { $push: { kicks: kick._id } }
-                ).exec();
-              } else { // if trend doesn't exist > create trend and add first kickID
-                newTrend = new Trend({
-                  name: hashtag,
-                  kicks: [kick._id]
-                 })
-                console.log(`saving new trend ${hashtag}`)
-                newTrend.save()
-              }
-            }
-          )
-        })
+            //Add trend if # in kick
+            const regex = /#[\wÀ-ÖØ-öø-ÿ]+/g;
+            const tab = kick.message.match(regex);
+            //map of # in order to create or update numbers of ID
+            tab.map((hashtag) => {
+              Trend.findOne({ name: hashtag }).then((trend) => {
+                if (trend) {
+                  // if trend exist > add one more kickID to trend
+                  Trend.updateOne(
+                    { name: hashtag },
+                    { $push: { kicks: kick._id } }
+                  ).exec();
+                } else {
+                  // if trend doesn't exist > create trend and add first kickID
+                  newTrend = new Trend({
+                    name: hashtag,
+                    kicks: [kick._id],
+                  });
+                  console.log(`saving new trend ${hashtag}`);
+                  newTrend.save();
+                }
+              });
+            });
 
             res.json({
               result: true,
@@ -114,13 +112,12 @@ router.delete("/delete/:kickId", (req, res) => {
   // Delete
   Kick.deleteOne({ _id: req.params.kickId })
     .then((kick) => {
-
       if (kick) {
-      // remove kickID from trends
-      Trend.updateMany(
-        { kicks: req.params.kickId },
-        { $pull: { kicks: req.params.kickId } }
-      ).then()
+        // remove kickID from trends
+        Trend.updateMany(
+          { kicks: req.params.kickId },
+          { $pull: { kicks: req.params.kickId } }
+        ).then();
         res.json({
           result: true,
           deletedCount: kick.deletedCount,

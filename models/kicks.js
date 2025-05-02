@@ -6,10 +6,7 @@ const KickSchema = mongoose.Schema({
     ref: "users",
   },
   message: String,
-  sentAtTimestamp: {
-    type: Number,
-    default: Math.floor(new Date().getTime() / 1000),
-  },
+  sentAtTimestamp: Number,
   nbLikes: {
     type: Number,
     default: 0,

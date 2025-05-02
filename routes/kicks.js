@@ -104,7 +104,7 @@ router.delete("/delete/:kickId", (req, res) => {
     });
 });
 
-// POST /kicks/like --> Add user to a kick, or remove if already there
+// POST /kicks/like --> Add or remove the kick to the User, and increment the nbLikes counter on the Kick
 router.post("/like", (req, res) => {
   if (!checkBody(req.body, ["likerToken", "kickId"])) {
     res.json({ result: false, error: "Missing or empty fields" });

@@ -28,7 +28,7 @@ router.get("/all", (req, res) => {
     });
 });
 
-// GET /kicks/new --> post a new kick (body needs message and token)
+// POST /kicks/new --> post a new kick (body needs message and token)
 router.post("/new", (req, res) => {
   if (!checkBody(req.body, ["message", "token"])) {
     res.json({ result: false, error: "Missing or empty fields" });

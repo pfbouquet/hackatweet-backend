@@ -9,6 +9,12 @@ const UserSchema = mongoose.Schema({
     type: Number,
     default: Math.floor(new Date().getTime() / 1000),
   },
+  likedKicks: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "kicks",
+    },
+  ],
 });
 
 const User = mongoose.model("users", UserSchema);

@@ -5,17 +5,15 @@ const KickSchema = mongoose.Schema({
     type: mongoose.Types.ObjectId,
     ref: "users",
   },
+  message: String,
   sentAtTimestamp: {
     type: Number,
     default: Math.floor(new Date().getTime() / 1000),
   },
-  message: String,
-  likes: [
-    {
-      type: mongoose.Types.ObjectId,
-      ref: "users",
-    },
-  ],
+  nbLikes: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const Kick = mongoose.model("kicks", KickSchema);

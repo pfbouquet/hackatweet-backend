@@ -114,57 +114,48 @@ router.post("/like", (req, res) => {
   User.findOne({ token: req.body.likerToken })
     .then((liker) => {
       if (liker) {
-        // found user, then find kick
-        Kick.findById(req.body.kickId)
-          .then((kick) => {
-            if (kick) {
-              if (kick.likes.includes(liker._id)) {
-                // remove liker._id from kick.likes
-                Kick.updateOne(
-                  { _id: req.body.kickId },
-                  {
-                    $pull: { likes: liker._id },
-                  }
-                ).then((data) => {
-                  res.json({
-                    result: true,
-                    kickId: req.body.kickId,
-                    likerToken: req.body.likerToken,
-                    like: false,
-                    message: "removed like",
-                  });
+        // found user, then check likedKicks
+        if (liker.likedKicks.includes(req.body.kickId)) {
+          // remove from likedKicks
+          User.updateOne(
+            { token: req.body.likerToken },
+            { $pull: { likedKicks: req.body.kickId } }
+          ).then((data) => {
+            // update counter nbLikes-1 on Kicks
+            Kick.findByIdAndUpdate(req.body.kickId, {
+              $inc: { nbLikes: -1 },
+            })
+              .populate("author", { firstname: 1, username: 1 })
+              .then((kick) => {
+                res.json({
+                  result: true,
+                  kick: kick,
+                  like: false,
+                  message: "removed like",
                 });
-              } else {
-                // add liker._id from kick.likes
-                Kick.updateOne(
-                  { _id: req.body.kickId },
-                  {
-                    $push: { likes: liker._id },
-                  }
-                ).then((data) => {
-                  res.json({
-                    result: true,
-                    kickId: req.body.kickId,
-                    likerToken: req.body.likerToken,
-                    like: true,
-                    message: "added like",
-                  });
-                });
-              }
-            } else {
-              res.json({
-                result: false,
-                error: "Failed to find kick from kickId",
               });
-            }
-          })
-          .catch((error) => {
-            console.log(error.message);
-            res.json({
-              result: false,
-              message: error.message,
-            });
           });
+        } else {
+          // add to likedKicks
+          User.updateOne(
+            { token: req.body.likerToken },
+            { $push: { likedKicks: req.body.kickId } }
+          ).then((data) => {
+            // update counter nbLikes+1 on Kicks
+            Kick.findByIdAndUpdate(req.body.kickId, {
+              $inc: { nbLikes: 1 },
+            })
+              .populate("author", { firstname: 1, username: 1 })
+              .then((kick) => {
+                res.json({
+                  result: true,
+                  kick: kick,
+                  like: true,
+                  message: "added like",
+                });
+              });
+          });
+        }
       } else {
         res.json({
           result: false,

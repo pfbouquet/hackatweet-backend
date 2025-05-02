@@ -63,4 +63,29 @@ router.post("/kickin", (req, res) => {
   });
 });
 
+router.get("/:token", (req, res) => {
+  if (!checkBody(req.params, ["token"])) {
+    res.json({ result: false, error: "Missing or empty fields" });
+    return;
+  }
+
+  // Check if the user has not already been registered
+  User.findOne({ token: req.params.token }).then((data) => {
+    if (data) {
+      res.json({
+        result: true,
+        user: {
+          firstname: data.firstname,
+          username: data.username,
+          token: data.token,
+          likedKicks: data.likedKicks,
+        },
+      });
+    } else {
+      // User already exists in database
+      res.json({ result: false, error: "User not found" });
+    }
+  });
+});
+
 module.exports = router;

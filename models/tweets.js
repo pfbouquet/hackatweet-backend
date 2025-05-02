@@ -5,7 +5,10 @@ const TweetSchema = mongoose.Schema({
     type: mongoose.Types.ObjectId,
     ref: "users",
   },
-  sentAtTimestamp: Number,
+  sentAtTimestamp: {
+    type: Number,
+    default: Math.floor(new Date().getTime() / 1000),
+  },
   message: String,
   likes: [
     {

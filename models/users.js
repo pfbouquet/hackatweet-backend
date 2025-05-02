@@ -5,7 +5,10 @@ const UserSchema = mongoose.Schema({
   username: String,
   password: String,
   token: String,
-  signupAtTimestamp: Number,
+  signupAtTimestamp: {
+    type: Number,
+    default: Math.floor(new Date().getTime() / 1000),
+  },
 });
 
 const User = mongoose.model("users", UserSchema);

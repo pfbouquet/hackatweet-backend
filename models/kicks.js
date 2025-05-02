@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const TweetSchema = mongoose.Schema({
+const KickSchema = mongoose.Schema({
   author: {
     type: mongoose.Types.ObjectId,
     ref: "users",
@@ -18,6 +18,6 @@ const TweetSchema = mongoose.Schema({
   ],
 });
 
-const Tweet = mongoose.model("users", TweetSchema);
+const Kick = mongoose.model("kicks", KickSchema);
 
-module.exports = Tweet;
+module.exports = Kick;

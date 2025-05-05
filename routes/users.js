@@ -55,6 +55,7 @@ router.post("/kickin", (req, res) => {
           firstname: data.firstname,
           username: data.username,
           token: data.token,
+          likedKicks: data.likedKicks,
         },
       });
     } else {
